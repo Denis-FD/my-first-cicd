@@ -2,13 +2,13 @@ name: C++ CI (Conan 2 + CMake + CTest)
 
 on:
   push:
-    branches: [master]
+    branches: [ "master" ]
   pull_request:
-    branches: [master]
+    branches: [ "master" ]
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Checkout
@@ -17,22 +17,21 @@ jobs:
     - name: Install build tools
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake g++ make
+        sudo apt-get install -y cmake build-essential
 
-    - name: Install Conan
+    - name: Setup Conan
       uses: conan-io/setup-conan@v1
+      with:
+        version: "2.24.0"
 
     - name: Install Conan dependencies
       run: conan install . --build=missing
 
     - name: Configure (CMake)
-      run: |
-        cmake -S . -B build \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
+      run: cmake --preset conan-release
 
     - name: Build
-      run: cmake --build build
+      run: cmake --build --preset conan-release
 
     - name: Test
-      run: ctest --test-dir build --output-on-failure
+      run: ctest --preset conan-release --output-on-failure
