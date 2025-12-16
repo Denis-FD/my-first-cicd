@@ -1,3 +1,7 @@
+[requires]
+boost/1.89.0
+gtest/1.17.0
+
 [layout]
 cmake_layout
 
